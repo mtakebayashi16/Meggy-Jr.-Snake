@@ -16,8 +16,12 @@ int snakeY = 0;
 int dotX = random(8);         //instance variables for dot
 int dotY = random(8);
 int directions = 0;            //create direction variable
+int snakeSpeed = 300;
+boolean eaten = false;
+int score = 1;
 
-void loop(){                  //each time through the loop...
+void loop(){                //each time through the loop...
+  SetAuxLEDs(score - 1); 
   CheckButtonsDown();        //check with buttons are pressed
   if (Button_Up)
     directions = 90;
@@ -48,27 +52,28 @@ void loop(){                  //each time through the loop...
   
   DrawPx(snakeX, snakeY, 4);    //Display, delay, clear
   DisplaySlate();
-  delay(200);
+  delay(snakeSpeed);
   ClearSlate();
   
   DrawPx(dotX, dotY, 1);
   DisplaySlate();
   
-  if (ReadPx(snakeX, snakeY) == 1){      //if the snake gets to the dot...
+  if (snakeX == dotX && snakeY == dotY){      //if the snake gets to the dot...
     Tone_Start(ToneC3, 100);    
     ClearSlate();                        //clears everything
     delay(100);
-    do {                                 //redraws dot
-       dotX = random(8);
-    }
-    while (snakeX == dotX);
-    do {
-      dotY = random(8);
-    }
-    while (snakeY == dotY);
-  }                             //ends if
+    eaten = true;
+    snakeSpeed = snakeSpeed-20;
+    score * 2;
+  }
+    
+  if (eaten == true){
+    dotX = random(8);
+    dotY = random(8);
+    eaten = false; 
+  }
   
-  
+ 
 }                               //ends loop
 
 
