@@ -10,19 +10,30 @@
 void setup(){
   MeggyJrSimpleSetup();        //Required code line 2 of 2
 }
-
-int snakeX = 0;       //create instance variables for snakeX and snakeY
-int snakeY = 0;        
+       
 int dotX = random(8);         //instance variables for dot
 int dotY = random(8);
 int directions = 0;            //create direction variable
 int snakeSpeed = 300;
 boolean eaten = false;
 int score = 1;
+int marker = 4;              //represents last index filled in the array
+
+struct Point {              //names the class
+  int x;
+  int y;
+};
+
+Point s1 = {3,4};          //starting points of the snake
+Point s2 = {4,4};
+Point s3 = {5,4};
+Point s4 = {6,4};
+
+Point snakeArray[64] = {s1, s2, s3, s4};
 
 void loop(){                //each time through the loop...
   SetAuxLEDs(score - 1); 
-  CheckButtonsDown();        //check with buttons are pressed
+  CheckButtonsDown();        //Check with buttons are pressed
   if (Button_Up)
     directions = 90;
   if (Button_Down)
@@ -33,48 +44,64 @@ void loop(){                //each time through the loop...
     directions = 0;
     
   if (directions == 90)        //if direction is 90, add one to y
-    snakeY ++;
+    snakeArray[0].y ++;
   if (directions == 270)       //if direction is 270, decrease y
-    snakeY --;
+    snakeArray[0].y --;
   if (directions == 0)         //if direction is 0, increase x
-    snakeX ++;
+    snakeArray[0].x ++;
   if (directions == 180)        //if direction is 180, decrease x
-    snakeX --;
+    snakeArray[0].x --;
     
-  if (snakeY > 7)              //adjust values (allows for wrapping of snake)
-    snakeY = 0;
-  if (snakeY < 0)
-    snakeY = 7;
-  if (snakeX > 7)
-    snakeX = 0;
-  if (snakeX < 0)
-    snakeX = 7;
+  if (snakeArray[0].y > 7)              //adjust values (allows for wrapping of snake)
+    snakeArray[0].y = 0;
+  if (snakeArray[0].y < 0)
+    snakeArray[0].y = 7;
+  if (snakeArray[0].x > 7)
+    snakeArray[0].x = 0;
+  if (snakeArray[0].x < 0)
+    snakeArray[0].x = 7;
   
-  DrawPx(snakeX, snakeY, 4);    //Display, delay, clear
+  drawSnake();                    //Display, delay, clear
   DisplaySlate();
   delay(snakeSpeed);
   ClearSlate();
+  updateSnake();
   
-  DrawPx(dotX, dotY, 1);
+  DrawPx(dotX, dotY, 1);          //draws the apple
   DisplaySlate();
   
-  if (snakeX == dotX && snakeY == dotY){      //if the snake gets to the dot...
+  if (snakeArray[0].x == dotX && snakeArray[0].y == dotY){      //if the snake gets to the dot...
     Tone_Start(ToneC3, 100);    
     ClearSlate();                        //clears everything
     delay(100);
     eaten = true;
-    snakeSpeed = snakeSpeed-20;
-    score * 2;
+    snakeSpeed = snakeSpeed-15;          //increases speed as game progresses
+    score = score*2;                     //increases score for Aux LEDs
+      if (snakeSpeed < 170)              // makes sure the game doesn't get too fast
+        snakeSpeed = 170;
   }
     
-  if (eaten == true){
+  if (eaten == true){                    //redraws dot if the snake eats it
     dotX = random(8);
     dotY = random(8);
     eaten = false; 
   }
   
- 
-}                               //ends loop
+  if (score > 255)
+    score = 1;
+}                                         //ends loop
 
 
+void drawSnake(){
+  for (int i = 0; i < marker; i++){
+    DrawPx(snakeArray[i].x, snakeArray[i].y, Green);
+  }
+}
+
+void updateSnake(){
+  for (int i = marker-1; i > 0; i--){
+    snakeArray[i].x = snakeArray[i-1].x;
+    snakeArray[i].y = snakeArray[i-1].y;
+  }
+}
 
