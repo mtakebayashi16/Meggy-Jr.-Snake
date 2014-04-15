@@ -77,6 +77,7 @@ void loop(){                //each time through the loop...
     eaten = true;
     snakeSpeed = snakeSpeed-15;          //increases speed as game progresses
     score = score*2;                     //increases score for Aux LEDs
+    marker ++;
       if (snakeSpeed < 170)              // makes sure the game doesn't get too fast
         snakeSpeed = 170;
   }
