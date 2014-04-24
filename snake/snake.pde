@@ -14,8 +14,9 @@ void setup(){
 int dotX = random(8);         //instance variables for dot
 int dotY = random(8);
 int directions = 0;            //create direction variable
-int snakeSpeed = 300;
+int snakeSpeed = 270;
 boolean eaten = false;
+boolean alive = false;
 int score = 1;
 int marker = 4;              //represents last index filled in the array
 
@@ -77,7 +78,7 @@ void loop(){                //each time through the loop...
     eaten = true;
     snakeSpeed = snakeSpeed-15;          //increases speed as game progresses
     score = score*2;                     //increases score for Aux LEDs
-    marker ++;
+    marker ++;                           //adds to the body of the snake when the apple is eaten
       if (snakeSpeed < 170)              // makes sure the game doesn't get too fast
         snakeSpeed = 170;
   }
@@ -88,21 +89,33 @@ void loop(){                //each time through the loop...
     eaten = false; 
   }
   
-  if (score > 255)
-    score = 1;
+  if (score > 256)                        //after all the Aux LEDs are lit, they restart from the beginning
+    score = 1; 
 }                                         //ends loop
 
 
 void drawSnake(){
-  for (int i = 0; i < marker; i++){
+  for (int i = 1; i < marker; i++){
+    DrawPx(snakeArray[0].x,snakeArray[0].y, Blue);
     DrawPx(snakeArray[i].x, snakeArray[i].y, Green);
+    if (snakeArray[0].x == snakeArray[i].x && snakeArray[0].y == snakeArray[i].y)
+      alive = true;   
+    if (alive){                    //death sequence
+      ClearSlate();
+      delay(2000);
+      Tone_Start(ToneA3, 1000);
+      score = 1;                    //resets score and length
+      marker = 4;
+      alive = false;
+}  
   }
 }
-
-void updateSnake(){
+  
+void updateSnake(){                   
   for (int i = marker-1; i > 0; i--){
     snakeArray[i].x = snakeArray[i-1].x;
     snakeArray[i].y = snakeArray[i-1].y;
   }
 }
+
 
